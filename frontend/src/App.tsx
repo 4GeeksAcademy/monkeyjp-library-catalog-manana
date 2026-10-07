@@ -1,20 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { BookOpen, Library, Search } from "lucide-react";
 import BookCard from "./components/BookCard";
 import BookForm from "./components/BookForm";
-import { getBooks } from "./services/books";
+import { getBook, getBooks } from "./services/books";
 import type { Book } from "./types/book";
 
 export default function App() {
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [bookId, setBookId] = useState("");
+  const [bookById, setBookById] = useState<Book | null>(null);
+  const [bookLookupError, setBookLookupError] = useState("");
+  const [isLookingUpBook, setIsLookingUpBook] = useState(false);
 
   useEffect(() => {
     getBooks()
       .then(setBooks)
       .catch(() => setError("Could not load catalog"));
   }, []);
+
+  async function handleBookLookup(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBookById(null);
+    setBookLookupError("");
+
+    const parsedBookId = Number(bookId);
+    if (!Number.isInteger(parsedBookId) || parsedBookId < 1) {
+      setBookLookupError("Enter a valid book ID");
+      return;
+    }
+
+    setIsLookingUpBook(true);
+    try {
+      setBookById(await getBook(parsedBookId));
+    } catch (lookupError) {
+      setBookLookupError(
+        lookupError instanceof Error ? lookupError.message : "Could not load book"
+      );
+    } finally {
+      setIsLookingUpBook(false);
+    }
+  }
 
   const filteredBooks = books.filter((book) => {
     const term = search.toLowerCase();
@@ -103,6 +130,49 @@ export default function App() {
               />
             </div>
           </div>
+
+          <form
+            onSubmit={handleBookLookup}
+            className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end"
+          >
+            <div>
+              <label
+                htmlFor="book-id"
+                className="mb-1 block text-sm font-medium text-slate-700"
+              >
+                Find book by ID
+              </label>
+              <input
+                id="book-id"
+                type="number"
+                min="1"
+                step="1"
+                required
+                value={bookId}
+                onChange={(event) => setBookId(event.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:w-56"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isLookingUpBook}
+              className="rounded-xl bg-indigo-600 px-4 py-2.5 font-medium text-white transition hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-60"
+            >
+              {isLookingUpBook ? "Searching..." : "Find book"}
+            </button>
+          </form>
+
+          {bookLookupError && (
+            <div className="mb-5 rounded-xl bg-rose-50 p-4 text-sm text-rose-700">
+              {bookLookupError}
+            </div>
+          )}
+
+          {bookById && (
+            <div className="mb-5 max-w-sm">
+              <BookCard book={bookById} />
+            </div>
+          )}
 
           {error && (
             <div className="rounded-xl bg-rose-50 p-4 text-sm text-rose-700">
