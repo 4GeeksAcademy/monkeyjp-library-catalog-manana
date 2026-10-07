@@ -7,6 +7,7 @@ Catálogo de biblioteca para listar, buscar y agregar libros.
 - `frontend/`: React, TypeScript y Vite; UI en `src/`, llamadas API en `src/services/` y tipos en `src/types/`.
 - `backend/`: FastAPI y Pydantic; aplicación en `app/main.py`, rutas en `app/routes/`, modelos en `app/models/` y lógica en `app/services/`.
 - `docker-compose.yml` define los servicios frontend y backend.
+- `memory-bank/`: `product.md` resume el producto y sus límites, `techContext.md` documenta el stack y la comunicación, y `progress.md` registra funcionalidades, limitaciones y próximos pasos sugeridos.
 
 ## Comandos
 - Arrancar ambos servicios: `docker compose up --build`.
@@ -25,6 +26,7 @@ Catálogo de biblioteca para listar, buscar y agregar libros.
 ## Forma de trabajar
 - Antes de trabajar en `frontend/`, leer `.agents/rules/frontend.md`.
 - Antes de trabajar en `backend/`, leer `.agents/rules/backend.md`.
+- Después de cada nueva implementación, actualizar `memory-bank/progress.md` y los otros documentos de `memory-bank/` afectados (`product.md` o `techContext.md`). Separar hechos verificados de sugerencias y no documentar supuestos como funcionalidades existentes.
 - Si cambia el contrato del libro, revisar frontend y backend juntos.
 - Si cambia la ejecución o conectividad, revisar el proxy `/api` de Vite y la configuración de Compose.
 - En la UI, distinguir carga, lista vacía y error; manejar también los errores del alta.
