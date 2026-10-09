@@ -1,11 +1,12 @@
 # Progreso del proyecto
 
 ## Funciona
-- El frontend muestra el catálogo, cuenta disponibilidad y filtra por título o autor. (`frontend/src/App.tsx`)
-- Permite añadir libros y consultarlos por ID; la API ofrece listado, consulta por ID y alta. (`frontend/src/components/BookForm.tsx`, `frontend/src/services/books.ts`, `backend/app/routes/books.py`)
+- El frontend muestra el catálogo, cuenta disponibilidad y filtra por coincidencia parcial del título sin distinguir mayúsculas. (`frontend/src/App.tsx`)
+- Permite añadir libros y consultarlos por ID; la API ofrece listado filtrable por `title`, consulta por ID y alta. (`frontend/src/components/BookForm.tsx`, `frontend/src/services/books.ts`, `backend/app/routes/books.py`)
 - La consulta por ID devuelve el libro existente; el ID inexistente devuelve `404`. Se comprobó a través del proxy: `/api/books/1` respondió `200` y `/api/books/999999` respondió `404`.
 - `npm run build` y `npm run lint` finalizaron correctamente después del cambio de consulta por ID. Ambos comandos están definidos en `frontend/package.json`.
 - `docker compose up --build` finalizó con código `0` en la terminal disponible.
+- `GET /api/books?title=Hob` y `GET /api/books?title=HOB` devolvieron la misma coincidencia; `title` vacío devolvió el catálogo completo y un término sin coincidencias devolvió una lista vacía. La UI servida contiene el mensaje exacto `No se encontraron libros`.
 
 ## Limitaciones actuales
 - No hay rutas para actualizar o eliminar libros. (`backend/app/routes/books.py`)

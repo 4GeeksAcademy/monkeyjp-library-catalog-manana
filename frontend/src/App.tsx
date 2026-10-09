@@ -7,6 +7,7 @@ import type { Book } from "./types/book";
 
 export default function App() {
   const [books, setBooks] = useState<Book[]>([]);
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [bookId, setBookId] = useState("");
@@ -15,10 +16,27 @@ export default function App() {
   const [isLookingUpBook, setIsLookingUpBook] = useState(false);
 
   useEffect(() => {
-    getBooks()
-      .then(setBooks)
-      .catch(() => setError("Could not load catalog"));
-  }, []);
+    let isCurrentRequest = true;
+
+    getBooks(search)
+      .then((results) => {
+        if (!search) {
+          setBooks(results);
+        }
+        if (isCurrentRequest) {
+          setFilteredBooks(results);
+        }
+      })
+      .catch(() => {
+        if (isCurrentRequest) {
+          setError("Could not load catalog");
+        }
+      });
+
+    return () => {
+      isCurrentRequest = false;
+    };
+  }, [search]);
 
   async function handleBookLookup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -42,15 +60,6 @@ export default function App() {
       setIsLookingUpBook(false);
     }
   }
-
-  const filteredBooks = books.filter((book) => {
-    const term = search.toLowerCase();
-
-    return (
-      book.title.toLowerCase().includes(term) ||
-      book.author.toLowerCase().includes(term)
-    );
-  });
 
   const availableBooks = books.filter((book) => book.available).length;
 
@@ -100,9 +109,12 @@ export default function App() {
         </section>
 
         <BookForm
-          onCreated={(book) =>
-            setBooks((current) => [...current, book])
-          }
+          onCreated={(book) => {
+            setBooks((current) => [...current, book]);
+            if (book.title.toLowerCase().includes(search.toLowerCase())) {
+              setFilteredBooks((current) => [...current, book]);
+            }
+          }}
         />
 
         <section>
@@ -124,7 +136,10 @@ export default function App() {
 
               <input
                 value={search}
-                onChange={(event) => setSearch(event.target.value)}
+                onChange={(event) => {
+                  setError("");
+                  setSearch(event.target.value);
+                }}
                 placeholder="Search books..."
                 className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 md:w-72"
               />
@@ -174,13 +189,11 @@ export default function App() {
             </div>
           )}
 
-          {error && (
+          {error ? (
             <div className="rounded-xl bg-rose-50 p-4 text-sm text-rose-700">
               {error}
             </div>
-          )}
-
-          {filteredBooks.length > 0 ? (
+          ) : filteredBooks.length > 0 ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {filteredBooks.map((book) => (
                 <BookCard key={book.id} book={book} />
@@ -193,7 +206,7 @@ export default function App() {
                 className="mx-auto mb-3 text-slate-300"
               />
               <p className="font-medium text-slate-600">
-                No books found
+                No se encontraron libros
               </p>
             </div>
           )}

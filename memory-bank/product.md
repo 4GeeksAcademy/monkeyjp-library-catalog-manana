@@ -4,7 +4,7 @@ Library Catalog es una aplicación web para consultar y ampliar un catálogo de 
 
 ## Funcionalidades actuales
 - Muestra los libros con título, autor, año y disponibilidad, además de conteos totales, disponibles y no disponibles.
-- Permite filtrar la colección por título o autor.
+- Permite filtrar la colección por coincidencia parcial del título, sin distinguir mayúsculas y minúsculas.
 - Permite añadir libros indicando título, autor y año; el formulario crea el libro como disponible.
 - Permite consultar un libro por ID y presenta errores de búsqueda, incluido el caso de ID no encontrado.
 - La API permite listar libros, obtener uno por ID y crear libros; también expone `/api/health`.

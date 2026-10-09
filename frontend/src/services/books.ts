@@ -1,7 +1,8 @@
 import type { Book } from "../types/book";
 
-export async function getBooks(): Promise<Book[]> {
-  const response = await fetch("/api/books");
+export async function getBooks(title = ""): Promise<Book[]> {
+  const query = new URLSearchParams({ title });
+  const response = await fetch(`/api/books?${query}`);
 
   if (!response.ok) {
     throw new Error("Could not load books");
