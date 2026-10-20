@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+@theme {
+  --color-paper: #f4f7f3;
+  --color-ink: #24312a;
+  --color-forest: #2f5d46;
+  --color-leafwash: #e5eee8;
+  --color-rule: #cfd9d1;
+  --color-brass: #8a5a16;
+  --font-display: Georgia, "Palatino Linotype", "Book Antiqua", serif;
+  --font-ui: "Trebuchet MS", "Gill Sans", sans-serif;
+}
+
 html,
 body,
 #root {
@@ -8,5 +19,7 @@ body,
 
 body {
   margin: 0;
-  background: #f8fafc;
+  background: var(--color-paper);
+  color: var(--color-ink); 
+  font-family: var(--font-ui);
 }
